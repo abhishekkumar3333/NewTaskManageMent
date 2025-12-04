@@ -59,20 +59,23 @@ model Team {
 }
 
 model TeamMember {
-  id     String @id @default(uuid())
-  role   Role   @default(MEMBER)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId String
+  id       String     @id @default(uuid())
+  role     Role       @default(MEMBER)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  team     Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId   String
+  projects Projects[]
 
   @@unique([userId, teamId])
 }
 
 model Projects {
-  id          String @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   description String
-  team        Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team        Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId      String
+  projects    TeamMember @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
 }
