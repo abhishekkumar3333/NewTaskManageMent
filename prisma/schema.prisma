@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  password    String
+  Task        Task[]       @relation("createTask")
+  AssignTask  Task[]       @relation("asignBased")
+  teamMembers TeamMember[]
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  user        User     @relation("createTask", fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  priority    priority
+  status      status
+  duedate     DateTime
+  assignedTo  User?    @relation("asignBased", fields: [assignId], references: [id], onDelete: Cascade)
+  assignId    String
+}
+
+enum priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum status {
+  TODO
+  IN_PROGRESS
+  UNDER_REVIEW
+  DONE
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Team {
+  id       String       @id @default(uuid())
+  name     String
+  members  TeamMember[]
+  projects Projects[]
+}
+
+model TeamMember {
+  id     String @id @default(uuid())
+  role   Role   @default(MEMBER)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+
+  @@unique([userId, teamId])
+}
+
+model Projects {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  team        Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId      String
+}
