@@ -28,7 +28,7 @@ model Task {
   status      status
   duedate     DateTime
   assignedTo  User?    @relation("asignBased", fields: [assignId], references: [id], onDelete: Cascade)
-  assignId    String
+  assignId    String?
 }
 
 enum priority {

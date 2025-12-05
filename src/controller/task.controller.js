@@ -1,13 +1,22 @@
 import prisma from "../utils/prisma.js";
 
-export const createTask = async (req, res) => {
+export const createTask = async (req, res) => { 
   try {
     const userId = req.user.id;
-    const { title, description } = req.body;
-    if (!title || !description) {
+    const { title, description, assignId, priority, duedate, status } =
+      req.body;
+    console.log(req.body, "kkkkkkkkkkkk");
+    if (
+      !title ||
+      !description ||
+      !assignId ||
+      !priority ||
+      !duedate ||
+      !status
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Title Description is required",
+        message: "All fields is required",
       });
     }
     const user = await prisma.user.findUnique({
@@ -21,11 +30,29 @@ export const createTask = async (req, res) => {
         message: "user not found",
       });
     }
+    let assignUser = null;
+    if (assignId) {
+      assignUser = await prisma.user.findUnique({
+        where: {
+          id: assignId,
+        },
+      });
+    }
+    if (!assignUser) {
+      return res.status(404).json({
+        sucess: false,
+        message: "assign user is not found",
+      });
+    }
     const task = await prisma.task.create({
       data: {
         title,
         description,
         userId,
+        assignId: assignId || null,
+        status,
+        priority,
+        duedate: new Date(duedate),
       },
     });
     res.status(200).json({
@@ -36,7 +63,7 @@ export const createTask = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       sucess: false,
-      message: "Internal Server Error",
+      message: "Internal Sereever Error",
     });
   }
 };
