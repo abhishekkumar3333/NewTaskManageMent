@@ -1,6 +1,7 @@
+import { use, useOptimistic } from "react";
 import prisma from "../utils/prisma.js";
 
-export const createTask = async (req, res) => { 
+export const createTask = async (req, res) => {
   try {
     const userId = req.user.id;
     const { title, description, assignId, priority, duedate, status } =
@@ -122,8 +123,21 @@ export const getSingleTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const taskId = req.params.id;
-    console.log(taskId);
-    const { title, description } = req.body;
+    const { title, description, assignId, status, priority, duedate } =
+      req.body;
+    if (assignId) {
+      const userExist = await prisma.user.findUnique({
+        where: {
+          id: assignId,
+        },
+      });
+      if (!userExist) {
+        return res.status(404).json({
+          succes: false,
+          message: "user not found",
+        });
+      }
+    }
     const updatedTask = await prisma.task.update({
       where: {
         id: taskId,
@@ -131,6 +145,9 @@ export const updateTask = async (req, res) => {
       data: {
         title,
         description,
+        status,
+        priority,
+        duedate: duedate ? new Date(duedate) : undefined,
       },
     });
     res.status(200).json({

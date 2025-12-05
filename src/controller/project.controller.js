@@ -1,3 +1,4 @@
+import { includes } from "zod";
 import prisma from "../utils/prisma.js";
 
 export const createProject = async (req, res) => {
@@ -48,6 +49,78 @@ export const createProject = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
+      message: "internal server error",
+    });
+  }
+};
+
+export const updateProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    console.log(projectId);
+    const { userId, title, description } = req.body;
+    console.log(req.body);
+    if (!userId) {
+      res.status(404).json({
+        sucess: false,
+        message: "user not found",
+      });
+    }
+    const project = await prisma.projects.findUnique({
+      where: {
+        id: projectId,
+      },
+      include: {
+        team: {
+          include: {
+            members: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    console.log(project, "kkk");
+    if (!project) {
+      return res.status(404).json({
+        sucess: false,
+        message: "project not found",
+      });
+    }
+    const teamOwner = project.team.members.find((m) => m.role === "OWNER");
+    console.log(teamOwner, "lllll");
+    if (!teamOwner) {
+      return res.status(403).json({
+        sucess: false,
+        message: "user is not team owner",
+      });
+    }
+    if (teamOwner.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the TEAM OWNER can update this project",
+      });
+    }
+    const updateProject = await prisma.projects.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        title: title || project.title,
+        description: description || project.description,
+      },
+    });
+    console.log(updateProject, "uuuuuu");
+    res.status(200).json({
+      sucess: true,
+      message: "project updated succesFully",
+      updateProject: updateProject,
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
       message: "internal server error",
     });
   }
