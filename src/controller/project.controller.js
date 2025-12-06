@@ -82,7 +82,6 @@ export const updateProject = async (req, res) => {
         },
       },
     });
-    console.log(project, "kkk");
     if (!project) {
       return res.status(404).json({
         sucess: false,
@@ -90,7 +89,6 @@ export const updateProject = async (req, res) => {
       });
     }
     const teamOwner = project.team.members.find((m) => m.role === "OWNER");
-    console.log(teamOwner, "lllll");
     if (!teamOwner) {
       return res.status(403).json({
         sucess: false,
@@ -122,6 +120,81 @@ export const updateProject = async (req, res) => {
     res.status(500).json({
       sucess: false,
       message: "internal server error",
+    });
+  }
+};
+
+export const addMemberToProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    console.log(projectId, "projjj");
+    const OwnerId = req.user.id;
+    console.log(OwnerId, "owner");
+    const { userId, role } = req.body;
+    console.log(req.body);
+    if (!userId) {
+      return res.status(403).json({
+        sucess: false,
+        message: "user is required",
+      });
+    }
+    const project = await prisma.projects.findUnique({
+      where: {
+        id: projectId,
+      },
+      include: {
+        team: {
+          include: {
+            members: true,
+          },
+        },
+      },
+    });
+    console.log(project);
+    if (!project) {
+      return res.status(404).json({
+        sucess: false,
+        message: "project not found",
+      });
+    }
+    const team = project.team;
+    console.log(team, "team");
+    const isOwner = team.members.find((m) => m.role === "OWNER");
+    console.log(isOwner, "owner");
+    if (!isOwner || isOwner.userId !== OwnerId) {
+      return res.status(400).json({
+        sucess: false,
+        message: "user is not Owner",
+      });
+    }
+    const createMember = await prisma.teamMember.create({
+      data: {
+        userId: userId,
+        teamId: team.id,
+        role: role || "MEMBER",
+      },
+    });
+    await prisma.projects.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        projects: {
+          connect: {
+            id: createMember.id,
+          },
+        },
+      },
+    });
+    res.status(200).json({
+      sucess: true,
+      message: "user added to project succesfully",
+      member: createMember,
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
+      message: "internal serveeer error",
     });
   }
 };
