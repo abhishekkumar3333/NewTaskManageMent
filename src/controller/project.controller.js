@@ -198,3 +198,32 @@ export const addMemberToProject = async (req, res) => {
     });
   }
 };
+
+export const getAllProjectsOfTeam = async (req, res) => {
+  try {
+    const teamId = req.params.teamId;
+
+    const projects = await prisma.projects.findMany({
+      where: {
+        id: teamId,
+      },
+    });
+    if (!projects) {
+      res.status(404).json({
+        sucess: false,
+        message: "no project found under this team",
+      });
+    }
+    res.status(200).json({
+      sucess: true,
+      message: "Project Fetched SuccessFully",
+      projects: projects,
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
