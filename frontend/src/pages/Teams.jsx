@@ -15,7 +15,6 @@ const Teams = () => {
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState('');
   
-  // Project creation state
   const [myMemberId, setMyMemberId] = useState('');
   const [newProject, setNewProject] = useState({ title: '', description: '' });
   const [creatingProject, setCreatingProject] = useState(false);
@@ -24,7 +23,7 @@ const Teams = () => {
     e.preventDefault();
     try {
       const response = await api.post('/team/create', { name: teamName });
-      if (response.data.sucess) { // Note: typo in backend 'sucess'
+      if (response.data.sucess) { 
         setCreatedTeam(response.data.team);
         setTeamName('');
       }
@@ -62,7 +61,7 @@ const Teams = () => {
         title: newProject.title,
         description: newProject.description,
         teamId: viewTeamId,
-        projectId: myMemberId, // The backend requires TeamMember ID as 'projectId'
+        projectId: myMemberId, 
       };
       
       const response = await api.post('/project/create', payload);
@@ -159,7 +158,6 @@ const Teams = () => {
 
       {activeTab === 'view' && (
         <div className="flex flex-col gap-8 animate-fade-in">
-            {/* Search Section */}
             <div className="card">
                 <h2 className="text-xl font-semibold mb-4 text-primary">Find Team Projects</h2>
                 <form onSubmit={fetchProjects} className="flex gap-4 items-end">
@@ -170,7 +168,7 @@ const Teams = () => {
                             onChange={(e) => setViewTeamId(e.target.value)}
                             required
                             placeholder="Paste Team ID here..."
-                            className="mb-0" // override default margin
+                            className="mb-0" 
                         />
                     </div>
                     <Button type="submit" disabled={searching} className="mb-4">{searching ? 'Searching...' : 'Search'}</Button>
@@ -178,10 +176,8 @@ const Teams = () => {
                 {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
             </div>
 
-            {/* Content Section */}
             {projects.length > 0 && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Projects List */}
                     <div className="lg:col-span-2">
                         <h3 className="text-lg font-semibold mb-4 text-secondary">Projects ({projects.length})</h3>
                         <div className="grid gap-4">
@@ -194,7 +190,6 @@ const Teams = () => {
                         </div>
                     </div>
 
-                    {/* Create Project Form */}
                     <div className="lg:col-span-1">
                         <div className="card text-sm">
                             <h3 className="text-lg font-semibold mb-4 text-primary">Add Project</h3>

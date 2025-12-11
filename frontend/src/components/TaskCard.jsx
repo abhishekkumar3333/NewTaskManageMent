@@ -1,47 +1,59 @@
 import React from 'react';
-import { Calendar, AlertCircle } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
-const priorityColors = {
-  LOW: 'bg-blue-500/10 text-blue-500',
-  MEDIUM: 'bg-yellow-500/10 text-yellow-500',
-  HIGH: 'bg-orange-500/10 text-orange-500',
-  CRITICAL: 'bg-red-500/10 text-red-500',
+const priorityConfig = {
+  LOW: { color: 'text-info', bg: 'rgba(56, 189, 248, 0.1)' },
+  MEDIUM: { color: 'text-warning', bg: 'rgba(245, 158, 11, 0.1)' },
+  HIGH: { color: 'text-danger', bg: 'rgba(239, 68, 68, 0.1)' },
+  CRITICAL: { color: 'text-danger', bg: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.3)' },
 };
 
-const statusColors = {
-  TODO: 'bg-gray-500/20 text-gray-400',
-  IN_PROGRESS: 'bg-blue-500/20 text-blue-400',
-  UNDER_REVIEW: 'bg-purple-500/20 text-purple-400',
-  DONE: 'bg-green-500/20 text-green-400',
+const statusConfig = {
+  TODO: { label: 'To Do', color: 'text-secondary', bg: 'rgba(148, 163, 184, 0.1)' },
+  IN_PROGRESS: { label: 'In Progress', color: 'text-primary', bg: 'rgba(99, 102, 241, 0.1)' },
+  UNDER_REVIEW: { label: 'Review', color: 'text-warning', bg: 'rgba(245, 158, 11, 0.1)' },
+  DONE: { label: 'Done', color: 'text-success', bg: 'rgba(34, 197, 94, 0.1)' },
 };
 
-const TaskCard = ({ task, onEdit, onDelete }) => {
+const TaskCard = ({ task }) => {
   const formattedDate = new Date(task.duedate).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
   });
 
+  const pConfig = priorityConfig[task.priority] || priorityConfig.LOW;
+  const sConfig = statusConfig[task.status] || statusConfig.TODO;
+
   return (
-    <div className="card hover:border-primary transition-colors cursor-pointer group flex flex-col justify-between h-full">
+    <div className="card card-interactive flex flex-col justify-between h-full bg-secondary group">
       <div>
-        <div className="flex justify-between items-start mb-3">
-          <span className={`text-xs px-2 py-1 rounded font-medium ${priorityColors[task.priority] || 'bg-gray-700 text-gray-300'}`}>
+        <div className="flex justify-between items-start mb-4">
+          <span 
+            className={`badge ${pConfig.color}`} 
+            style={{ backgroundColor: pConfig.bg, border: pConfig.border }}
+          >
             {task.priority}
           </span>
-          {/* Actions could go here */}
         </div>
         
-        <h3 className="text-lg font-semibold text-primary mb-2 line-clamp-2">{task.title}</h3>
-        <p className="text-secondary text-sm mb-4 line-clamp-3">{task.description}</p>
+        <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-white group-hover:text-primary transition-colors">
+            {task.title}
+        </h3>
+        <p className="text-secondary text-sm mb-6 line-clamp-3 leading-relaxed">
+            {task.description}
+        </p>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-secondary pt-4 border-t border-border mt-auto" style={{borderColor: 'var(--border-color)'}}>
-        <div className="flex items-center gap-2">
-          <Calendar size={14} />
+      <div className="flex items-center justify-between text-sm pt-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+        <div className="flex items-center gap-2 text-secondary">
+          <Calendar size={16} />
           <span>{formattedDate}</span>
         </div>
-        <span className={`text-xs px-2 py-1 rounded font-medium ${statusColors[task.status] || 'bg-gray-700'}`}>
-            {task.status.replace('_', ' ')}
+        <span 
+            className={`badge ${sConfig.color}`}
+            style={{ backgroundColor: sConfig.bg }}
+        >
+            {sConfig.label}
         </span>
       </div>
     </div>
