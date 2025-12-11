@@ -3,7 +3,8 @@ import api from '../api/axios';
 import Layout from '../components/Layout';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Plus } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const Teams = () => {
   const [activeTab, setActiveTab] = useState('create');
@@ -13,6 +14,8 @@ const Teams = () => {
   const [viewTeamId, setViewTeamId] = useState('');
   const [projects, setProjects] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState('');
   
   const [myMemberId, setMyMemberId] = useState('');
@@ -36,12 +39,19 @@ const Teams = () => {
   const fetchProjects = async (e) => {
     e.preventDefault();
     setSearching(true);
+    setHasSearched(true);
     setError('');
     setProjects([]);
+    setViewTeamId('');
     try {
       const response = await api.get(`/project/${viewTeamId}/getspecificproject`);
       if (response.data.sucess) {
         setProjects(response.data.projects);
+        if (response.data.projects.length === 0) {
+            setIsModalOpen(true);
+        } else {
+            setIsModalOpen(false);
+        }
       } else { 
          setError('No projects found or team does not exist');
       }
@@ -68,6 +78,7 @@ const Teams = () => {
       if (response.data.sucess) {
         alert('Project created!');
         setNewProject({ title: '', description: '' });
+        setIsModalOpen(false);
         fetchProjects({ preventDefault: () => {} }); // Reload projects
       }
     } catch (err) {
@@ -107,9 +118,9 @@ const Teams = () => {
         <p className="text-secondary">Manage your teams and collaborate on projects.</p>
       </div>
 
-      <div className="flex gap-4 mb-6 border-b border-border" style={{borderColor: 'var(--border-color)'}}>
+      <div className="flex gap-4 mb-4 border-b border-border " style={{borderColor: 'var(--border-color)'}} >
         <button
-            className={`pb-3 px-2 font-medium transition-colors ${activeTab === 'create' ? 'text-primary border-b-2 border-primary' : 'text-secondary hover:text-primary'}`}
+            className={`pb-3 px-2 font-medium transition-colors mb-6 w-200  ${activeTab === 'create' ? 'text-primary border-b-2 border-primary' : 'text-secondary hover:text-primary'}`}
             onClick={() => setActiveTab('create')}
         >
             Create Team
@@ -163,12 +174,11 @@ const Teams = () => {
                 <form onSubmit={fetchProjects} className="flex gap-4 items-end">
                     <div className="flex-1">
                         <Input 
-                            label="Team ID"
                             value={viewTeamId}
                             onChange={(e) => setViewTeamId(e.target.value)}
                             required
                             placeholder="Paste Team ID here..."
-                            className="mb-0" 
+                             
                         />
                     </div>
                     <Button type="submit" disabled={searching} className="mb-4">{searching ? 'Searching...' : 'Search'}</Button>
@@ -177,94 +187,67 @@ const Teams = () => {
             </div>
 
             {projects.length > 0 && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2">
-                        <h3 className="text-lg font-semibold mb-4 text-secondary">Projects ({projects.length})</h3>
-                        <div className="grid gap-4">
-                            {projects.map(proj => (
-                                <div key={proj.id} className="card bg-tertiary/30 border-transparent hover:border-primary transition-colors">
-                                    <h4 className="font-bold text-lg mb-1">{proj.title}</h4>
-                                    <p className="text-secondary text-sm">{proj.description}</p>
-                                </div>
-                            ))}
-                        </div>
+                <div className="flex flex-col gap-6">
+                    <div className="flex justify-between items-center mt-3">
+                        <h3 className="text-lg font-semibold text-secondary">Projects ({projects.length})</h3>
+                        <Button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2">
+                            <Plus size={18} />
+                            Add Project
+                        </Button>
                     </div>
-
-                    <div className="lg:col-span-1">
-                        <div className="card text-sm">
-                            <h3 className="text-lg font-semibold mb-4 text-primary">Add Project</h3>
-                            <form onSubmit={handleCreateProject}>
-                                <Input 
-                                    label="My Member ID"
-                                    value={myMemberId}
-                                    onChange={(e) => setMyMemberId(e.target.value)}
-                                    required
-                                    placeholder="Paste Member ID..."
-                                />
-                                <Input 
-                                    label="Project Title"
-                                    value={newProject.title}
-                                    onChange={(e) => setNewProject({...newProject, title: e.target.value})}
-                                    required
-                                    placeholder="Project Title"
-                                />
-                                <div className="flex flex-col gap-2 mb-4">
-                                    <label className="text-sm font-medium text-secondary">Description</label>
-                                    <textarea
-                                        className="input-field min-h-[80px]"
-                                        value={newProject.description}
-                                        onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                                        required
-                                        placeholder="Description..."
-                                    />
-                                </div>
-                                <Button type="submit" disabled={creatingProject} className="w-full">
-                                    {creatingProject ? 'Creating...' : 'Create Project'}
-                                </Button>
-                            </form>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {projects.map(proj => (
+                            <div key={proj.id} className="card bg-tertiary/30 border-transparent hover:border-primary transition-colors">
+                                <h4 className="font-bold text-lg mb-2 text-primary">{proj.title}</h4>
+                                <p className="text-secondary text-sm line-clamp-3">{proj.description}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
             
-            {projects.length === 0 && !error && !searching && viewTeamId && (
-                 <div className="text-center text-secondary p-8 bg-secondary/50 rounded-lg">
-                    No projects found for this team. You can create one if you have a valid Member ID.
-                    
-                     <div className="card text-sm max-w-md mx-auto mt-6 text-left">
-                            <h3 className="text-lg font-semibold mb-4 text-primary">Add Project</h3>
-                            <form onSubmit={handleCreateProject}>
-                                <Input 
-                                    label="My Member ID"
-                                    value={myMemberId}
-                                    onChange={(e) => setMyMemberId(e.target.value)}
-                                    required
-                                    placeholder="Paste Member ID..."
-                                />
-                                <Input 
-                                    label="Project Title"
-                                    value={newProject.title}
-                                    onChange={(e) => setNewProject({...newProject, title: e.target.value})}
-                                    required
-                                    placeholder="Project Title"
-                                />
-                                <div className="flex flex-col gap-2 mb-4">
-                                    <label className="text-sm font-medium text-secondary">Description</label>
-                                    <textarea
-                                        className="input-field min-h-[80px]"
-                                        value={newProject.description}
-                                        onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                                        required
-                                        placeholder="Description..."
-                                    />
-                                </div>
-                                <Button type="submit" disabled={creatingProject} className="w-full">
-                                    {creatingProject ? 'Creating...' : 'Create Project'}
-                                </Button>
-                            </form>
-                        </div>
+            {projects.length === 0 && !error && !searching && hasSearched && (
+                 <div className="text-center text-secondary p-8 bg-secondary/50 rounded-lg flex flex-col items-center gap-4">
+                    <p>No projects found for this team.</p>
+                    <p className="text-sm">You can create one if you have a valid Member ID.</p>
+                    <Button onClick={() => setIsModalOpen(true)}>
+                        Create First Project
+                    </Button>
                  </div>
             )}
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Project">
+                <form onSubmit={handleCreateProject} className="flex flex-col gap-4">
+                    <Input 
+                        label="My Member ID"
+                        value={myMemberId}
+                        onChange={(e) => setMyMemberId(e.target.value)}
+                        required
+                        placeholder="Paste Member ID..."
+                    />
+                    <Input 
+                        label="Project Title"
+                        value={newProject.title}
+                        onChange={(e) => setNewProject({...newProject, title: e.target.value})}
+                        required
+                        placeholder="Project Title"
+                    />
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-secondary">Description</label>
+                        <textarea
+                            className="input-field min-h-[100px] resize-none p-3 rounded-lg bg-tertiary text-text-primary border border-border focus:border-primary outline-none transition-all"
+                            value={newProject.description}
+                            onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                            required
+                            placeholder="Description..."
+                            style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-tertiary)' }}
+                        />
+                    </div>
+                    <Button type="submit" disabled={creatingProject} className="w-full mt-2">
+                        {creatingProject ? 'Creating...' : 'Create Project'}
+                    </Button>
+                </form>
+            </Modal>
         </div>
       )}
     </Layout>

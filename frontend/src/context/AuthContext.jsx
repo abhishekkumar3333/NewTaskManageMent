@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/user/login', { email, password });
-      if (response.data.success) {
+      if (response.data.success || response.data.sucess) {
         localStorage.setItem('token', response.data.token);
         setUser({ token: response.data.token });
         return { success: true };
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       const response = await api.post('/user/register', { name, email, password });
-      if (response.data.success) {
+      if (response.data.success || response.data.sucess) {
         return { success: true };
       }
       return { success: false, message: response.data.message };

@@ -25,9 +25,9 @@ const TaskCard = ({ task }) => {
   const sConfig = statusConfig[task.status] || statusConfig.TODO;
 
   return (
-    <div className="card card-interactive flex flex-col justify-between h-full bg-secondary group">
+    <div className="card card-interactive flex flex-col justify-between h-full bg-primary group " style={{marginBottom: '1rem'}}>
       <div>
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-4 ">
           <span 
             className={`badge ${pConfig.color}`} 
             style={{ backgroundColor: pConfig.bg, border: pConfig.border }}
@@ -37,10 +37,10 @@ const TaskCard = ({ task }) => {
         </div>
         
         <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-white group-hover:text-primary transition-colors">
-            {task.title}
+            {task?.title}
         </h3>
         <p className="text-secondary text-sm mb-6 line-clamp-3 leading-relaxed">
-            {task.description}
+            {task?.description}
         </p>
       </div>
 
@@ -53,7 +53,7 @@ const TaskCard = ({ task }) => {
             className={`badge ${sConfig.color}`}
             style={{ backgroundColor: sConfig.bg }}
         >
-            {sConfig.label}
+            {sConfig?.label}
         </span>
       </div>
     </div>

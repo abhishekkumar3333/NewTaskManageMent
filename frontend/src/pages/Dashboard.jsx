@@ -4,7 +4,6 @@ import Layout from '../components/Layout';
 import TaskCard from '../components/TaskCard';
 import Button from '../components/Button';
 import CreateTaskModal from '../components/CreateTaskModal';
-import { Plus } from 'lucide-react';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -15,7 +14,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await api.get('/task/getalltask');
-      if (response.data.success) {
+      if (response.data.sucess || response.data.success) {
         setTasks(response.data.task);
       }
     } catch (error) {
@@ -36,10 +35,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-primary mb-2">Dashboard</h1>
           <p className="text-secondary">Welcome back! Here's an overview of your tasks.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus size={20} />
-          <span>New Task</span>
-        </Button>
+     
       </div>
 
       {loading ? (
@@ -48,9 +44,10 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-          {tasks.length > 0 ? (
+          {tasks?.length > 0 ? (
             tasks.map((task) => (
               <TaskCard key={task.id} task={task} />
+              
             ))
           ) : (
             <div className="col-span-full text-center py-12 bg-secondary rounded-lg border border-border" style={{borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-secondary)'}}>

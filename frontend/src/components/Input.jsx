@@ -2,7 +2,7 @@ import React from 'react';
 
 const Input = ({ label, type = 'text', value, onChange, placeholder, name, id, required = false, ...props }) => {
   return (
-    <div className="flex flex-col gap-2 mb-4">
+    <div className="flex flex-col gap-2 mb-4 ">
       {label && <label htmlFor={id || name} className="text-sm font-medium text-secondary">{label}</label>}
       <input
         type={type}
@@ -12,7 +12,7 @@ const Input = ({ label, type = 'text', value, onChange, placeholder, name, id, r
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="input-field"
+        className="input-field "
         {...props}
       />
     </div>

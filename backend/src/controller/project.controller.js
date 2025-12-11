@@ -221,3 +221,26 @@ export const getAllProjectsOfTeam = async (req, res) => {
     });
   }
 };
+
+export const getAllProjects = async (req, res) => {
+  try {
+    const projects = await prisma.projects.findMany({});
+    if (!projects) {
+      return res.status(404).json({
+        sucess: false,
+        message: "Projects Not Found",
+      });
+    }
+    res.status(200).json({
+      sucess: true,
+      message: "projects Fetched successfullly",
+      projects: projects,
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};

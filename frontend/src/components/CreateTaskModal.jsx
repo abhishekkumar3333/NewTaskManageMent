@@ -33,7 +33,7 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
       };
 
       const response = await api.post('/task/createtask', payload);
-      if (response.data.success) {
+      if (response.data.success || response.data.sucess) {
         onTaskCreated();
         onClose();
         setFormData({
