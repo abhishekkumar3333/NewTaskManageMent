@@ -27,7 +27,7 @@ const Register = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-primary">
+    <div className="h-screen flex items-center justify-center ">
       <div className="card glass w-full max-w-md animate-fade-in">
         <h2 className="text-2xl font-bold text-center mb-6 text-primary">Task Manager</h2>
         <h3 className="text-xl font-semibold text-center mb-6">Create Account</h3>
@@ -65,8 +65,8 @@ const Register = () => {
           </Button>
         </form>
 
-        <p className="text-center mt-4 text-sm text-secondary">
-          Already have an account? <Link to="/login" className="text-primary hover:underline">Login</Link>
+        <p className="text-center mt-4 text-sm text-secondary mt-10">
+          Already have an account? <Link to="/login" className="text-primary hover:underline mt-5">Login</Link>
         </p>
       </div>
     </div>

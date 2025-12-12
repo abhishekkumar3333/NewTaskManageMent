@@ -24,7 +24,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         <div className="flex items-center justify-between p-4 border-b border-border" style={{ borderColor: 'var(--border-color)' }}>
           <h3 className="text-xl font-semibold text-primary">{title}</h3>
           <button onClick={onClose} className="text-secondary hover:text-primary transition-colors">
-            <X size={24} />
+          
           </button>
         </div>
         <div className="p-4 overflow-y-auto max-h-[80vh]">

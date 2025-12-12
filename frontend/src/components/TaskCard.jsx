@@ -1,5 +1,7 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import Button from './Button';
+import deleteTask from '../hooks/deleteTask';
 
 const priorityConfig = {
   LOW: { color: 'text-info', bg: 'rgba(56, 189, 248, 0.1)' },
@@ -15,7 +17,7 @@ const statusConfig = {
   DONE: { label: 'Done', color: 'text-success', bg: 'rgba(34, 197, 94, 0.1)' },
 };
 
-const TaskCard = ({ task }) => {
+const TaskCard = ({ task, onDelete }) => {
   const formattedDate = new Date(task.duedate).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -23,6 +25,13 @@ const TaskCard = ({ task }) => {
 
   const pConfig = priorityConfig[task.priority] || priorityConfig.LOW;
   const sConfig = statusConfig[task.status] || statusConfig.TODO;
+
+  const handleDelete = async () => {
+    const success = await deleteTask(task.id);
+    if (success && onDelete) {
+      onDelete(task.id);
+    }
+  };
 
   return (
     <div className="card card-interactive flex flex-col justify-between h-full bg-primary group " style={{marginBottom: '1rem'}}>
@@ -34,11 +43,16 @@ const TaskCard = ({ task }) => {
           >
             {task.priority}
           </span>
+          <div>
+            <Button variant="ghost" onClick={handleDelete}>Delete</Button>
+
+          </div>
         </div>
         
         <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-white group-hover:text-primary transition-colors">
             {task?.title}
         </h3>
+        
         <p className="text-secondary text-sm mb-6 line-clamp-3 leading-relaxed">
             {task?.description}
         </p>
@@ -49,10 +63,13 @@ const TaskCard = ({ task }) => {
           <Calendar size={16} />
           <span>{formattedDate}</span>
         </div>
+        
         <span 
+
             className={`badge ${sConfig.color}`}
             style={{ backgroundColor: sConfig.bg }}
         >
+
             {sConfig?.label}
         </span>
       </div>

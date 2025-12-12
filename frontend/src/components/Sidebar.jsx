@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-    { icon: CheckSquare, label: 'My Tasks', path: '/tasks' },
+    { icon: CheckSquare, label: 'New Task', path: '/tasks' },
     { icon: Folder, label: 'Projects', path: '/projects' },
     { icon: Users, label: 'Teams', path: '/teams' },
   ];

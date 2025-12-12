@@ -1,10 +1,25 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Teams from './pages/Teams';
 import ProtectedRoute from './components/ProtectedRoute';
+import CreateTaskModal from './components/CreateTaskModal';
+import Layout from './components/Layout';
+
+const CreateTaskPage = () => {
+  const navigate = useNavigate();
+  return (
+    <Layout>
+      <CreateTaskModal 
+        isOpen={true} 
+        onClose={() => navigate('/')} 
+        onTaskCreated={() => navigate('/')} 
+      />
+    </Layout>
+  );
+};
 
 function App() {
   return (
@@ -29,7 +44,11 @@ function App() {
       />
       <Route
         path="/tasks"
-        element={<Navigate to="/" replace />} 
+        element={
+          <ProtectedRoute>
+            <CreateTaskPage />
+          </ProtectedRoute>
+        } 
       />
       <Route
         path="/projects"

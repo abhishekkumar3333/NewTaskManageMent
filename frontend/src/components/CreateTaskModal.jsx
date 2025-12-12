@@ -118,7 +118,6 @@ const CreateTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
         />
 
         <div className="flex justify-end gap-3 mt-4">
-            <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
             <Button type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create Task'}</Button>
         </div>
       </form>

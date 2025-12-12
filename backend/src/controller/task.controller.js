@@ -6,7 +6,6 @@ export const createTask = async (req, res) => {
     const userId = req.user.id;
     const { title, description, assignId, priority, duedate, status } =
       req.body;
-    console.log(req.body, "kkkkkkkkkkkk");
     if (
       !title ||
       !description ||
@@ -94,13 +93,11 @@ export const getAllTask = async (req, res) => {
 export const getSingleTask = async (req, res) => {
   try {
     const taskId = req.params.id;
-    console.log(taskId, "taskId");
     const getSingleTask = await prisma.task.findUnique({
       where: {
         id: taskId,
       },
     });
-    console.log(getSingleTask);
     if (!getSingleTask) {
       return res.status(404).json({
         sucess: false,
@@ -166,14 +163,12 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const taskId = req.params.id;
-    console.log(taskId);
     const userId = req.user.id;
     const task = await prisma.task.findUnique({
       where: {
         id: taskId,
       },
     });
-    console.log(task);
     if (!task) {
       return res.status(404).json({
         sucess: false,

@@ -11,6 +11,7 @@ model User {
   name        String
   email       String       @unique
   password    String
+  resetToken  String?
   Task        Task[]       @relation("createTask")
   AssignTask  Task[]       @relation("asignBased")
   teamMembers TeamMember[]
